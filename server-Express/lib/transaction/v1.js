@@ -38,7 +38,8 @@ const PostParams = vstruct([
 ]);
 
 const UpdateAccountParams = vstruct([
-    { name: 'name', type: vstruct.VarString(vstruct.UInt8) },
+    { name: 'key', type: vstruct.VarString(vstruct.UInt8) },
+    { name: 'value', type: vstruct.VarBuffer(vstruct.UInt16BE) },
 ]);
 
 function encode(tx) {
@@ -69,6 +70,11 @@ function encode(tx) {
             break;
 
         case 'update_account':
+            if(tx.params.key === 'name')
+                tx.params.value = Buffer.from(tx.params.value, 'utf-8');
+            if(tx.params.key === 'picture')
+                tx.params.value = Buffer.from(tx.params.value, 'base64')
+            console.log(tx.params)
             params = UpdateAccountParams.encode(tx.params);
             operation = 4;
             break;
@@ -117,6 +123,8 @@ function decode(data) {
         case 4:
             operation = 'update_account';
             params = UpdateAccountParams.decode(tx.params);
+            if(params.key === 'name')
+                params.value = params.value.toString('utf-8');
             break;
 
         default:
