@@ -1,12 +1,16 @@
 const router = require('express').Router();
-const {GetAllByAddress, GetSequence, CountMoney, UpdateAccountName, GetAccountName, UpdateAccountAvatar} = require('../controller/Account')
-const upload = require('../config/multer');
-router.get('/:account', GetAllByAddress);
-router.get('/:account/sequence',GetSequence);
-router.get('/:account/money',CountMoney);
-router.get('/:account/name',GetAccountName );
+const getBlockByAccount = require('../controller/getBlockByAccount')
+router.get('/:account', async (req, res) => {
+    try {
+        let rows = await getBlockByAccount(req.params.account);
+        res.json({
+            rows
+        })
+    } catch(e)
+    {
+        console.log(e)
+        res.status(400).end();
+    }
+})
 
-
-router.post('/:account/name', UpdateAccountName);
-router.post('/:account/avatar', upload.single('avatar'), UpdateAccountAvatar)
 module.exports = router;
