@@ -1,8 +1,9 @@
 const account = require('./account')
+const payment = require('./payment')
 module.exports = function (app) {
 
     app.use('/account',account)
-
+    app.use('/payment', payment)
     app.use(function(req, res, next) {
         next(createError(404));
     });

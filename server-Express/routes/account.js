@@ -13,13 +13,4 @@ router.get('/:account', async (req, res) => {
     }
 })
 
-router.get('/:account/tien', async (req, res) => {
-    res.send('Tien')
-})
-
-router.post('/:account/tien', async (req, res) => {
-    console.log(req.body)
-    res.send('ok')
-})
-
 module.exports = router;
