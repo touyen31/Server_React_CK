@@ -91,30 +91,93 @@ const GetAccountName = async (req, res)=>{
 }
 
 const UpdateAccountAvatar = async (req, res)=>{
+    let flag = 'data:image/jpeg;base64,';
     if(!req.file || (req.file.size / 1024) > 20 || !req.body.secretkey){
         return res.status(400).end();
     }
     console.log(req.file)
-    // const data = base64Img.base64Sync(req.file.path);
+    let data = base64Img.base64Sync(req.file.path);
+    data = data.slice(data.indexOf(flag) + flag.length);
 
-    // let params = {
-    //     key: 'picture',
-    //     value: data
-    // }
-    // console.log(params);
-    // return sendTx(req.params.account, 'update_account', params, req.body.secretkey)
-    //     .then(response => {
-    //         if(response.log === '')
-    //             res.json({
-    //                 Success: true
-    //             })
-    //         else
-    //             res.status(400).end();
-    //     })
-    //     .catch(e => {
-    //         console.log(e);
-    //         res.status(400).end();
-    //     })
+    let params = {
+        key: 'picture',
+        value: data
+    }
+    return sendTx(req.params.account, 'update_account', params, req.body.secretkey)
+        .then(response => {
+            console.log(response)
+            if(response.log === '')
+                res.json({
+                    Success: true
+                })
+            else
+                res.status(400).end();
+        })
+        .catch(e => {
+            console.log(e);
+            res.status(400).end();
+        })
+}
+const GetAccountAvatar = async (req, res)=>{
+    try {
+        let blocks = await Block.find({account: req.params.account, operation: 'update_account', "params.key": 'picture' }).sort({time: -1}).limit(1);
+        let flag='data:image/jpeg;base64,'
+        if(blocks.length ===0)
+            return res.json({
+                Avatar: ''
+            })
+        return res.json({
+            Avatar: blocks[0].params.value
+        })
+    }
+    catch (e) {
+        console.log(e)
+        res.status(400).end();
+
+    }
+
+}
+
+const PostStatus = async (req, res)=>{
+    let params = {
+        content:{
+            type: 1,
+            text:req.body.text
+        },
+        keys:[]
+    }
+    return sendTx(req.params.account, 'post', params, req.body.secretkey)
+        .then(responese => {
+            if(responese.log === ''){
+                return res.json({
+                    Success: true
+                })
+            }
+            else return res.status(400).end()
+        })
+        .catch(e =>{
+            console.log(e);
+            res.status(400).end()
+        })
+}
+
+const GetAllStatus = async (req, res)=>{
+    try {
+        let blocks = await Block.find({account: req.params.account, operation: 'post'}).sort({time: -1});
+        if(blocks.length ===0)
+            return res.json({
+                data: ''
+            })
+        return res.json({
+            data: blocks
+        })
+    }
+    catch (e) {
+        console.log(e)
+        res.status(400).end();
+
+    }
+
 }
 
 
@@ -125,5 +188,8 @@ module.exports = {
     CountMoney,
     UpdateAccountName,
     GetAccountName,
-    UpdateAccountAvatar
+    UpdateAccountAvatar,
+    GetAccountAvatar,
+    PostStatus,
+    GetAllStatus
 }

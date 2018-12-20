@@ -4,12 +4,12 @@ let Block = require('../../models/block')
 
 require('../../config/mongo')
 //lấy hết tất cả các block về
+let index = 1;
 
 async function listener (block) {
     let height = block.block.header.height;
     while (index < height){
         let tmp = await client.block({height: index});
-        index ++;
         let txs = tmp.block.data.txs;
         if(txs!= null){
             let _decode = txs.map(i => decode(Buffer.from(i, 'base64')));
@@ -32,6 +32,7 @@ async function listener (block) {
 
             })
         }
+        index += 1;
     }
 
 }
@@ -39,5 +40,4 @@ async function listener (block) {
 
 
 
-let index = 1;
 client.subscribe({query: "tm.event = 'NewBlock'"}, (e) => listener(e))
