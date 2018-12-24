@@ -1,10 +1,12 @@
 var createError = require('http-errors');
 const account = require('./account')
 const payment = require('./payment')
+const tx = require('./tx')
 module.exports = function (app) {
 
     app.use('/account',account)
     app.use('/payment', payment)
+    app.use('/tx', tx);
     app.use(function(req, res, next) {
         next(createError(404));
     });

@@ -1,4 +1,5 @@
 const Block = require('../models/block')
+const Account = require('../models/account')
 const getSequence = require('../lib/api/getSequence')
 const sendTx = require('../lib/api/sendTx')
 const base64Img = require('base64-img')
@@ -161,7 +162,7 @@ const PostStatus = async (req, res)=>{
         })
 }
 
-const GetAllStatus = async (req, res)=>{
+const GetAllMyStatus = async (req, res)=>{
     try {
         let blocks = await Block.find({account: req.params.account, operation: 'post'}).sort({time: -1});
         if(blocks.length ===0)
@@ -181,6 +182,24 @@ const GetAllStatus = async (req, res)=>{
 }
 
 
+const GetFollower = async(req, res) => {
+    let account = req.params.account
+    if(!account)
+        return res.status(400).end();
+    try {
+        let rows = await Account.find({following: {$all: [account]}})
+        rows = rows.map(row => row.account);
+        return res.json({
+            follower: rows
+        })
+
+    }catch (e) {
+        return res.json({
+            follower: []
+        })
+    }
+}
+
 
 module.exports = {
     GetAllByAddress,
@@ -191,5 +210,6 @@ module.exports = {
     UpdateAccountAvatar,
     GetAccountAvatar,
     PostStatus,
-    GetAllStatus
+    GetAllMyStatus,
+    GetFollower
 }
