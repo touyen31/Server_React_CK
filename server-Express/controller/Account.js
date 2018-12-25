@@ -200,6 +200,23 @@ const GetFollower = async(req, res) => {
     }
 }
 
+const GetFollowing = async (req, res)=>{
+    let account = req.params.account
+    if(!account)
+        return res.status(400).end();
+    try {
+        let rows = await Account.find({account: account})
+        return res.json({
+            following: rows[0].following
+        })
+
+    }catch (e) {
+        return res.json({
+            following: []
+        })
+    }
+}
+
 
 module.exports = {
     GetAllByAddress,
@@ -211,5 +228,6 @@ module.exports = {
     GetAccountAvatar,
     PostStatus,
     GetAllMyStatus,
-    GetFollower
+    GetFollower,
+    GetFollowing
 }
