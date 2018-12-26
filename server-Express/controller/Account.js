@@ -217,6 +217,41 @@ const GetFollowing = async (req, res)=>{
     }
 }
 
+const GetEnergy = async (req, res)=>{
+    let account = req.params.account
+    if(!account)
+        return res.status(400).end();
+    try {
+        let rows = await Account.find({account: account})
+        rows.forEach(row => {
+            if(row.bandwidth != 0) {
+                return res.json({
+                    energy: row.energy
+                })
+            }
+        })
+    }catch (e) {
+        return res.json({
+            energy: 0
+        })
+    }
+}
+
+const GetAllStatusAllAccount = async (req, res)=>{
+    let account = req.params.account;
+    try{
+        let row = await Account.findOne({account: account});
+        let following = row.following;
+        following.push(account);
+        let blocks = await Block.find({$or: [{account: {$in: following}}, {"params.address": {$in: following}}]}).sort({time: -1});
+        return res.json({
+            data: blocks
+        })
+    } catch (e) {
+        return res.status(400).end();
+    }
+}
+
 
 module.exports = {
     GetAllByAddress,
@@ -229,5 +264,7 @@ module.exports = {
     PostStatus,
     GetAllMyStatus,
     GetFollower,
-    GetFollowing
+    GetFollowing,
+    GetEnergy,
+    GetAllStatusAllAccount
 }

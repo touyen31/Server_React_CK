@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {GetAllByAddress, GetSequence, CountMoney,
     UpdateAccountName, GetAccountName, UpdateAccountAvatar,
-    GetAccountAvatar, PostStatus, GetAllMyStatus, GetFollower, GetFollowing
+    GetAccountAvatar, PostStatus, GetAllMyStatus, GetFollower, GetFollowing, GetEnergy, GetAllStatusAllAccount
 } = require('../controller/Account')
 const upload = require('../config/multer');
 router.get('/:account', GetAllByAddress);
@@ -12,6 +12,8 @@ router.get('/:account/avatar', GetAccountAvatar);
 router.get('/:account/status', GetAllMyStatus);
 router.get('/:account/follower',GetFollower);
 router.get('/:account/following', GetFollowing);
+router.get('/:account/energy', GetEnergy);
+router.get('/:account/All',GetAllStatusAllAccount )
 
 router.post('/:account/name', UpdateAccountName);
 router.post('/:account/avatar', upload.single('avatar'), UpdateAccountAvatar)
