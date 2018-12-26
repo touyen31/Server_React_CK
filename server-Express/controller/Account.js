@@ -167,7 +167,7 @@ const GetAllMyStatus = async (req, res)=>{
         let blocks = await Block.find({account: req.params.account, operation: 'post'}).sort({time: -1});
         if(blocks.length ===0)
             return res.json({
-                data: ''
+                data: []
             })
         return res.json({
             data: blocks
@@ -252,6 +252,40 @@ const GetAllStatusAllAccount = async (req, res)=>{
     }
 }
 
+const getComment = async (req, res)=>{
+    let hash=req.params.hash
+    try{
+        let blocks = await Block.find({operation: 'interact', 'params.content.type':1, 'params.object':hash}).sort({time: -1});
+        if(blocks.length ===0)
+            return res.json({
+                comment: []
+            })
+        return res.json({
+            comment: blocks
+        })
+    }
+    catch (e) {
+        return res.status(400).end();
+    }
+}
+
+const GetReaction = async (req, res)=>{
+    let hash=req.params.hash
+    try{
+        let blocks = await Block.find({operation: 'interact', 'params.content.type':2, 'params.object':hash}).sort({time: -1});
+        if(blocks.length ===0)
+            return res.json({
+                reaction: []
+            })
+        return res.json({
+            reaction: blocks
+        })
+    }
+    catch (e) {
+        return res.status(400).end();
+    }
+}
+
 
 module.exports = {
     GetAllByAddress,
@@ -266,5 +300,7 @@ module.exports = {
     GetFollower,
     GetFollowing,
     GetEnergy,
-    GetAllStatusAllAccount
+    GetAllStatusAllAccount,
+    getComment,
+    GetReaction
 }
