@@ -243,7 +243,7 @@ const GetAllStatusAllAccount = async (req, res)=>{
         let row = await Account.findOne({account: account});
         let following = row.following;
         following.push(account);
-        let blocks = await Block.find({$or: [{account: {$in: following}}, {"params.address": {$in: following}}]}).sort({time: -1});
+        let blocks = await Block.find({$or: [{ operation: 'post',account: {$in: following}}, {operation: 'post',"params.address": {$in: following}}]}).sort({time: -1});
         return res.json({
             data: blocks
         })
