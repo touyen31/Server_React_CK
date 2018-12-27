@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {GetAllByAddress, GetSequence, CountMoney,
     UpdateAccountName, GetAccountName, UpdateAccountAvatar,
     GetAccountAvatar, PostStatus, GetAllMyStatus, GetFollower, GetFollowing, GetEnergy, GetAllStatusAllAccount, getComment,
-GetReaction
+GetReaction, GetStatusWithPage
 } = require('../controller/Account')
 const upload = require('../config/multer');
 router.get('/:account', GetAllByAddress);
@@ -17,6 +17,7 @@ router.get('/:account/energy', GetEnergy);
 router.get('/:account/All',GetAllStatusAllAccount );
 router.get('/comment/:hash', getComment);
 router.get('/reaction/:hash',GetReaction )
+router.get('/:account/allstatus/:page', GetStatusWithPage)
 
 
 router.post('/:account/name', UpdateAccountName);

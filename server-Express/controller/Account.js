@@ -252,6 +252,26 @@ const GetAllStatusAllAccount = async (req, res)=>{
     }
 }
 
+const GetStatusWithPage = async (req, res)=>{
+    let perPage = 10
+    let page = req.param('page')
+    let account = req.params.account;
+    try{
+        let row = await Account.findOne({account: account});
+        let following = row.following;
+        following.push(account);
+        let blocks = await Block.find({$or: [{ operation: 'post',account: {$in: following}}, {operation: 'post',"params.address": {$in: following}}]}).sort({time: -1})
+            .limit(perPage).skip(perPage * page);
+        return res.json({
+            data: blocks
+        })
+    } catch (e) {
+        return res.status(400).end();
+    }
+
+}
+
+
 const getComment = async (req, res)=>{
     let hash=req.params.hash
     try{
@@ -302,5 +322,6 @@ module.exports = {
     GetEnergy,
     GetAllStatusAllAccount,
     getComment,
-    GetReaction
+    GetReaction,
+    GetStatusWithPage
 }
