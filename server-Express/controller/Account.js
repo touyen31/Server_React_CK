@@ -292,7 +292,10 @@ const getComment = async (req, res)=>{
 const GetReaction = async (req, res)=>{
     let hash=req.params.hash
     try{
-        let blocks = await Block.find({operation: 'interact', 'params.content.type':2, 'params.object':hash}).sort({time: -1});
+        let blocks = await Block.aggregate([{$sort: {time: 1}}, {$match: {operation: 'interact', 'params.object': hash, 'params.content.type': 2}},
+            {$group: {_id: '$account', reaction: {$last: '$params.content.reaction'}}}])
+        //return blocks
+        // let blocks = await Block.find({operation: 'interact', 'params.content.type':2, 'params.object':hash}).sort({time: -1});
         if(blocks.length ===0)
             return res.json({
                 reaction: []
